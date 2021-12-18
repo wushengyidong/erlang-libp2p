@@ -12,34 +12,35 @@
 %% See the License for the specific language governing permissions and
 %% limitations under the License.
 
-{application, libp2p,
- [{description, "An Erlang implementation of libp2p"},
-  {vsn, "0.1.0"},
-  {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib,
-                  crypto,
-                  lager,
-                  cuttlefish,
-                  ranch,
-                  inert,
-                  multiaddr,
-                  nat,
-                  inet_ext,
-                  ecc_compact,
-                  enacl,
-                  splicer,
-                  backoff,
-                  relcast,
-                  libp2p_crypto,
-                  throttle,
-                  erbloom
-                 ]},
-  {env,[]},
+{application, libp2p, [
+    {description, "An Erlang implementation of libp2p"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib,
+        crypto,
+        lager,
+        cuttlefish,
+        ranch,
+        inert,
+        multiaddr,
+        nat,
+        inet_ext,
+        ecc_compact,
+        enacl,
+        splicer,
+        backoff,
+        relcast,
+        libp2p_crypto,
+        throttle,
+        erbloom,
+        enif_protobuf
+    ]},
+    {env, []},
 
-  %% hex.pm packaging:
-  {licenses, ["Apache 2.0"]},
-  {maintainers, ["Helium"]},
-  {links, [{"Github", "https://github.com/helium/erlang-libp2p"}]}
- ]}.
+    %% hex.pm packaging:
+    {licenses, ["Apache 2.0"]},
+    {maintainers, ["Helium"]},
+    {links, [{"Github", "https://github.com/helium/erlang-libp2p"}]}
+]}.
