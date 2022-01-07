@@ -57,17 +57,19 @@ connect_to(MAddr, UserOptions, Timeout, TID) ->
         false ->
             case p2p_addr(MAddr) of
                 {ok, Addr} ->
-                    lager:info("AA: libp2p transport p2p 222"),
+                    lager:info("AA: libp2p_transport_p2p p2p_addr ok  ~p", [Addr]),
                     Peerbook = libp2p_swarm:peerbook(TID),
                     Result = case libp2p_peerbook:get(Peerbook, Addr) of
                                  {ok, PeerInfo} ->
                                      ListenAddrs = libp2p_peer:cleared_listen_addrs(PeerInfo),
                                      case libp2p_transport:find_session(ListenAddrs, UserOptions, TID) of
                                          {ok, _, SessionPid} ->
+                                             lager:info("AA: libp2p_transport_p2p find_session ok  ~p", [SessionPid]),
                                              libp2p_config:insert_session(TID, MAddr, SessionPid),
                                              {ok, SessionPid};
                                          {error, not_found} ->
                                              SortedListenAddrs = libp2p_transport:sort_addrs(TID, ListenAddrs),
+                                             lager:info("AA: libp2p_transport_p2p find_session SortedListenAddrs  ~p", [SortedListenAddrs]),
                                              case connect_to_listen_addr(SortedListenAddrs, UserOptions, Timeout, TID, []) of
                                                  {ok, SessionPid}->
                                                      libp2p_config:insert_session(TID, MAddr, SessionPid),
@@ -84,15 +86,19 @@ connect_to(MAddr, UserOptions, Timeout, TID) ->
                                      lager:error("AA: libp2p_peerbook get error: ~p", [Reason]),
                                      {error, Reason}
                              end,
+                    lager:info("AA: libp2p_transport_p2p Result  ~p", [Result]),
                     case Result of
                         {error, _} ->
                             %% try a refresh of the peer
+                            lager:info("AA: libp2p_transport_p2p refresh"),
                             libp2p_peerbook:refresh(Peerbook, Addr);
                         _ ->
                             ok
                     end,
                     Result;
-                {error, Reason} -> {error, Reason}
+                {error, Reason} ->
+                    lager:info("AA: libp2p_transport_p2p p2p_addr fail  ~p", [Reason]),
+                    {error, Reason}
             end
     end.
 
