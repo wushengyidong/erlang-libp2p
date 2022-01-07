@@ -97,6 +97,7 @@ sort_addrs(TID, Addrs) ->
 -spec connect_to(string(), libp2p_swarm:connect_opts(), pos_integer(), ets:tab())
                 -> {ok, pid()} | {error, term()}.
 connect_to(Addr, Options, Timeout, TID) ->
+    lager:info("AA: libp2p transport connect to"),
     case libp2p_swarm:is_stopping(TID) of
         true -> {error, stopping};
         false ->
@@ -106,14 +107,17 @@ connect_to(Addr, Options, Timeout, TID) ->
                     {error, dialing_self};
                 false ->
                     % TODO: maybe we should add an option to pick a specific session
+                    lager:info("AA: 3"),
                     case find_session([Addr], Options, TID) of
                         {ok, _, SessionPid} -> {ok, SessionPid};
                         {error, not_found} ->
                             case for_addr(TID, Addr) of
                                 {ok, ConnAddr, {Transport, TransportPid}} ->
-                                    lager:debug("~p connecting to ~p", [Transport, ConnAddr]),
+                                    lager:info("AA: ~p connecting to ~p", [Transport, ConnAddr]),
                                     try Transport:connect(TransportPid, ConnAddr, Options, Timeout, TID) of
-                                        {error, Error} -> {error, Error};
+                                        {error, Error} ->
+                                            lager:error("AA: failed to connect in libp2p transport connect to: ~p", [Error]),
+                                            {error, Error};
                                         {ok, SessionPid} -> {ok, SessionPid}
                                     catch
                                         What:Why -> {error, {What, Why}}

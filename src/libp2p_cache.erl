@@ -48,7 +48,7 @@ stop(TID) ->
     gen_server:call(element(2, reg_name(TID)), stop, infinity).
 
 reg_name(TID)->
-    {local,libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
+    {local, libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
 
 -spec insert(pid(), any(), any()) -> ok | {error, any()}.
 insert(Pid, Key, Value) ->

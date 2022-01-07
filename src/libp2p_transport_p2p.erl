@@ -48,13 +48,16 @@ match_protocols(_) ->
 -spec connect_to(string(), libp2p_swarm:connect_opts(), pos_integer(), ets:tab())
                 -> {ok, pid()} | {error, term()}.
 connect_to(MAddr, UserOptions, Timeout, TID) ->
+    lager:info("AA: libp2p transport p2p"),
     Aliases = application:get_env(libp2p, node_aliases, []),
     case lists:keyfind(MAddr, 1, Aliases) of
         {MAddr, AliasAddr} ->
+            lager:info("AA: libp2p transport p2p 111"),
             libp2p_transport:connect_to(AliasAddr, UserOptions, Timeout, TID);
         false ->
             case p2p_addr(MAddr) of
                 {ok, Addr} ->
+                    lager:info("AA: libp2p transport p2p 222"),
                     Peerbook = libp2p_swarm:peerbook(TID),
                     Result = case libp2p_peerbook:get(Peerbook, Addr) of
                                  {ok, PeerInfo} ->
@@ -69,11 +72,17 @@ connect_to(MAddr, UserOptions, Timeout, TID) ->
                                                  {ok, SessionPid}->
                                                      libp2p_config:insert_session(TID, MAddr, SessionPid),
                                                      {ok, SessionPid};
-                                                 {error, Error} -> {error, Error}
+                                                 {error, Error} ->
+                                                     lager:error("AA: connect_to_listen_addr error: ~p", [Error]),
+                                                     {error, Error}
                                              end;
-                                         {error, Error} -> {error, Error}
+                                         {error, Error} ->
+                                             lager:error("AA: find_session error: ~p", [Error]),
+                                             {error, Error}
                                      end;
-                                 {error, Reason} -> {error, Reason}
+                                 {error, Reason} ->
+                                     lager:error("AA: libp2p_peerbook get error: ~p", [Reason]),
+                                     {error, Reason}
                              end,
                     case Result of
                         {error, _} ->

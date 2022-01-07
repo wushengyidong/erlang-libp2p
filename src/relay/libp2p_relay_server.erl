@@ -51,7 +51,7 @@ start_link(TID) ->
     gen_server:start_link(reg_name(TID), ?MODULE, [TID], [{hibernate_after, 5000}]).
 
 reg_name(TID)->
-    {local,libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
+    {local, libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
 
 -spec relay(pid()) -> ok | {error, any()}.
 relay(Swarm) ->

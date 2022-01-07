@@ -68,7 +68,7 @@ connect(Pid, MAddr, Options, Timeout, TID) ->
                  ,pos_integer(), ets:tab()) -> {ok, pid()} | {error, term()}.
 connect_to(_Pid, MAddr, Options, Timeout, TID) ->
     {ok, {RAddress, SAddress}} = libp2p_relay:p2p_circuit(MAddr),
-    lager:info("init relay transport with ~p", [[MAddr, RAddress, SAddress]]),
+    lager:info("AA init relay transport with ~p", [[MAddr, RAddress, SAddress]]),
     true = libp2p_config:insert_relay_sessions(TID, SAddress, self()),
     case RAddress == SAddress of
         true ->
@@ -114,6 +114,7 @@ connect_rcv(Swarm, MAddr, SAddress, SessionPid, Stream) ->
             true = libp2p_config:remove_relay_sessions(libp2p_swarm:tid(Swarm), SAddress),
             {ok, Session};
         {error, "server_down"}=Error ->
+            lager:error("AA: server_down"),
             true = libp2p_config:remove_relay_sessions(libp2p_swarm:tid(Swarm), SAddress),
             MarkedPeerAddr = libp2p_crypto:p2p_to_pubkey_bin(SAddress),
             PeerBook = libp2p_swarm:peerbook(Swarm),

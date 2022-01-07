@@ -34,7 +34,7 @@ start_link(TID, Predicate) ->
     gen_server:start_link(reg_name(TID), ?MODULE, [TID, Predicate], []).
 
 reg_name(TID)->
-    {local,libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
+    {local, libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
 
 mgr(TID) ->
     ets:lookup_element(TID, ?SERVER, 2).

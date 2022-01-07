@@ -73,13 +73,16 @@ info(Pid) ->
 
 -spec dial(string(), pid()) -> {ok, libp2p_connection:connection()} | {error, term()}.
 dial(Path, SessionPid) ->
+    lager:info("AA: libp2p session dial"),
     try libp2p_session:open(SessionPid) of
-        {error, Error} -> {error, Error};
+        {error, Error} ->
+            lager:error("AA: Failed to open session in dia: ~p", [Error]),
+            {error, Error};
         {ok, Connection} ->
             Handlers = [{Path, undefined}],
             try libp2p_multistream_client:negotiate_handler(Handlers, Path, Connection) of
                 {error, Error} ->
-                    lager:debug("Failed to negotiate handler for ~p: ~p", [Connection, Error]),
+                    lager:error("Failed to negotiate handler for ~p: ~p", [Connection, Error]),
                     {error, Error};
                 server_switch ->
                     lager:warning("Simultaneous connection with ~p resulted from dial", [libp2p_connection:addr_info(Connection)]),
@@ -97,6 +100,8 @@ dial(Path, SessionPid) ->
                         -> {ok, Stream::pid()} | {error, term()}.
 dial_framed_stream(Path, SessionPid, Module, Args) ->
     case dial(Path, SessionPid) of
-        {error, Error} -> {error, Error};
+        {error, Error} ->
+            lager:error("Failed to dia in dial_framed_stream: ~p", [Error]),
+            {error, Error};
         {ok, Connection} -> Module:client(Connection, Args)
     end.

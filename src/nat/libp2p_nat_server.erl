@@ -47,7 +47,7 @@ start_link(TID) ->
     gen_server:start_link(reg_name(TID), ?MODULE, [TID], []).
 
 reg_name(TID)->
-    {local,libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
+    {local, libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
 
 %%--------------------------------------------------------------------
 %% @doc

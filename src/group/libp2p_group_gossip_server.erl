@@ -52,7 +52,7 @@ start_link(Sup, TID) ->
     gen_server:start_link(reg_name(TID), ?MODULE, [Sup, TID], [{hibernate_after, 5000}]).
 
 reg_name(TID)->
-    {local,libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
+    {local, libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
 
 %% libp2p_gossip_stream
 %%
@@ -95,7 +95,7 @@ init([Sup, TID]) ->
     SupportedPaths = get_opt(Opts, supported_gossip_paths, ?SUPPORTED_GOSSIP_PATHS),
     lager:debug("Supported gossip paths: ~p:", [SupportedPaths]),
 
-    {ok, Bloom} = bloom:new_forgetful_optimal(1000, 3, 800, 1.0e-3), 
+    {ok, Bloom} = bloom:new_forgetful_optimal(1000, 3, 800, 1.0e-3),
 
     self() ! start_workers,
     {ok, update_metadata(#state{sup=Sup, tid=TID,
@@ -220,7 +220,7 @@ handle_cast({send, Key, Data}, State=#state{bloom=Bloom}) ->
             {_, Pids} = lists:unzip(connections(all, State)),
             lager:debug("sending data via connection pids: ~p",[Pids]),
             lists:foreach(fun(Pid) ->
-                                  %% TODO we could check the connections's Address here for 
+                                  %% TODO we could check the connections's Address here for
                                   %% if we received this data from that address and avoid
                                   %% bouncing the gossip data back
                                   libp2p_group_worker:send(Pid, Key, Data, true)

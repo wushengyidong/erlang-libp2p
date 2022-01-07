@@ -29,7 +29,7 @@ start_link([TID, _Opts] = Args) ->
     supervisor:start_link(reg_name(TID), ?MODULE, Args).
 
 reg_name(TID)->
-    {local,libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
+    {local, libp2p_swarm:reg_name_from_tid(TID, ?MODULE)}.
 
 register_cache(TID) ->
     ets:insert(TID, {?CACHE, self()}).

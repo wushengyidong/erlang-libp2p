@@ -342,23 +342,31 @@ dial_framed_stream(TID, Addr, Path, Module, Args) ->
 dial_framed_stream(Sup, Addr, Path, Options, Timeout, Module, Args) when is_pid(Sup) ->
     dial_framed_stream(tid(Sup), Addr, Path, Options, Timeout, Module, Args);
 dial_framed_stream(TID, Addr, Path, Options, Timeout, Module, Args) ->
+    lager:info("AA: 1"),
     case proplists:get_value(secured, Args, false) of
         false ->
+            lager:info("AA: 2"),
             case connect(TID, Addr, Options, Timeout) of
                 {error, Error} ->
+                    lager:error("Failed to connect in dial_framed_stream: ~p", [Error]),
                     {error, Error};
                 {ok, SessionPid} ->
+                    lager:info("AA: 3"),
                     libp2p_session:dial_framed_stream(Path, SessionPid, Module, Args)
             end;
         _Swarm when is_pid(_Swarm) ->
+            lager:info("AA: 4"),
             case libp2p_transport_p2p:p2p_addr(Addr) of
                 {error, _} ->
                     {error, secured_not_dialing_p2p};
                 {ok, _} ->
+                    lager:info("AA: 5"),
                     case connect(TID, Addr, Options, Timeout) of
                         {error, Error} ->
+                            lager:error("AA: Failed to connect in dial_framed_stream: ~p", [Error]),
                             {error, Error};
                         {ok, SessionPid} ->
+                            lager:info("AA: 6"),
                             libp2p_session:dial_framed_stream(Path, SessionPid, Module, Args ++ [{secure_peer, libp2p_crypto:p2p_to_pubkey_bin(Addr)}])
                     end
             end
