@@ -38,12 +38,11 @@ init(client, Connection, [_TID, Handler]) ->
             Timer = erlang:send_after(?TIMEOUT, self(), identify_timeout),
             {ok, #state{handler=Handler, session=Session, timeout=Timer}};
         {error, Error} ->
-            lager:debug("Identify failed to get session: ~p", [Error]),
+            lager:error("Identify failed to get session: ~p", [Error]),
             {stop, normal}
     end;
 init(server, Connection, [Path, TID]) ->
     lager:info("BB: init server -> libp2p_stream_idenify"),
-    lager:info("BB: server stack: ~s~n", [element(2, process_info(self(), backtrace))]),
     "/" ++ Str = Path,
     Challenge = base58:base58_to_binary(Str),
     lager:info("BB: init server -> Challenge ~p~n", [Challenge]),

@@ -71,7 +71,7 @@ handle_info({handle_identify, Session, {ok, Identify}}, State=#state{tid=TID}) -
     %% Store the session in config and tell the peerbook about the
     %% session change as well as the new identify record.
     Addr = libp2p_crypto:pubkey_bin_to_p2p(libp2p_identify:pubkey_bin(Identify)),
-    lager:debug("received identity for peer ~p. Putting this peer", [Addr]),
+    lager:info("BB: received identity for peer ~p. Putting this peer", [Addr]),
     PeerBook = libp2p_swarm:peerbook(TID),
     try libp2p_peerbook:put(PeerBook, [libp2p_identify:peer(Identify)]) of
         ok ->
