@@ -1145,16 +1145,20 @@ mask_address({A,B,C,D,E,F,G,H}, Maskbits) ->
     Subnet.
 
 do_identify(Session, Identify, State=#state{tid=TID}) ->
+    lager:info("BB: do_identify 111"),
     {LocalAddr, _PeerAddr} = libp2p_session:addr_info(State#state.tid, Session),
     RemoteP2PAddr = libp2p_crypto:pubkey_bin_to_p2p(libp2p_identify:pubkey_bin(Identify)),
     ListenAddrs = libp2p_config:listen_addrs(TID),
+    lager:info("BB: do_identify 222"),
     case lists:member(LocalAddr, ListenAddrs) of
         true ->
+            lager:info("BB: do_identify 333"),
             ObservedAddr = libp2p_identify:observed_addr(Identify),
             {noreply, record_observed_addr(RemoteP2PAddr, ObservedAddr, State)};
         false ->
             %% check if our listen addrs have changed
             %% find all the listen addrs owned by this transport
+            lager:info("BB: do_identify 444"),
             MyListenAddrs = [ LA || LA <- ListenAddrs, match_addr(LA, TID) /= false ],
             NewListenAddrsWithPid = case MyListenAddrs of
                                         [] ->
@@ -1196,8 +1200,10 @@ do_identify(Session, Identify, State=#state{tid=TID}) ->
                     [ libp2p_config:insert_listener(TID, LAs, P) || {LAs, P} <- NewListenAddrsWithPid],
                     libp2p_nat:maybe_spawn_discovery(self(), NewListenAddrs, TID),
                     %% wipe out any prior observed addresses here
+                    lager:info("BB: do_identify 555"),
                     {noreply, record_observed_addr(RemoteP2PAddr, ObservedAddr, State#state{observed_addrs=sets:new()} )};
                 false ->
+                    lager:info("BB: do_identify 666"),
                     lager:debug("identify response with local address ~p that is not a listen addr socket ~p, ignoring",
                                 [LocalAddr, NewListenAddrs]),
                     %% this is likely a discovery session we dialed with unique_port
