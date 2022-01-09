@@ -47,7 +47,7 @@ for_addr(TID, Addr) ->
         [],
         libp2p_config:lookup_transports(TID)
     ),
-    lager:info("AA: libp2p transport for_addr Matches  ~p", [Matches]),
+    %%lager:info("AA: libp2p transport for_addr Matches  ~p", [Matches]),
     case Matches of
         [] ->
             {error, {unsupported_address, Addr}};
@@ -98,7 +98,7 @@ sort_addrs(TID, Addrs) ->
 -spec connect_to(string(), libp2p_swarm:connect_opts(), pos_integer(), ets:tab())
                 -> {ok, pid()} | {error, term()}.
 connect_to(Addr, Options, Timeout, TID) ->
-    lager:info("AA: libp2p transport connect to ~p", [Addr]),
+    %%lager:info("AA: libp2p transport connect to ~p", [Addr]),
     case libp2p_swarm:is_stopping(TID) of
         true -> {error, stopping};
         false ->
@@ -108,28 +108,28 @@ connect_to(Addr, Options, Timeout, TID) ->
                     {error, dialing_self};
                 false ->
                     % TODO: maybe we should add an option to pick a specific session
-                    lager:info("AA: 3"),
+                    %%lager:info("AA: 3"),
                     case find_session([Addr], Options, TID) of
                         {ok, _, SessionPid} -> {ok, SessionPid};
                         {error, not_found} ->
-                            lager:info("AA: libp2p transport not_found"),
+                            %%lager:info("AA: libp2p transport not_found"),
                             case for_addr(TID, Addr) of
                                 {ok, ConnAddr, {Transport, TransportPid}} ->
-                                    lager:info("AA: ~p connecting to ~p", [Transport, ConnAddr]),
+                                    %%lager:info("AA: ~p connecting to ~p", [Transport, ConnAddr]),
                                     try Transport:connect(TransportPid, ConnAddr, Options, Timeout, TID) of
                                         {error, Error} ->
-                                            lager:error("AA: failed to connect in libp2p transport connect to: ~p", [Error]),
+                                            %%lager:error("AA: failed to connect in libp2p transport connect to: ~p", [Error]),
                                             {error, Error};
                                         {ok, SessionPid} -> {ok, SessionPid}
                                     catch
                                         What:Why -> {error, {What, Why}}
                                     end;
                                 {error, Error} ->
-                                    lager:error("AA: libp2p transport connect_to for_addr error  ~p", [Error]),
+                                    %%lager:error("AA: libp2p transport connect_to for_addr error  ~p", [Error]),
                                     {error, Error}
                             end;
                         {error, Error} ->
-                            lager:error("AA: libp2p transport connect_to error  ~p", [Error]),
+                            %%lager:error("AA: libp2p transport connect_to error  ~p", [Error]),
                             {error, Error}
                     end
             end
@@ -160,10 +160,10 @@ find_session([Addr | Tail], Options, TID) ->
                           -> {ok, pid()} | {error, term()}.
 start_client_session(TID, Addr, Connection) ->
     Handlers = libp2p_config:lookup_connection_handlers(TID),
-    lager:info("AA: libp2p libp2p_transport start_client_session in ~p",[Handlers]),
+    %%lager:info("AA: libp2p libp2p_transport start_client_session in ~p",[Handlers]),
     case libp2p_multistream_client:negotiate_handler(Handlers, Addr, Connection) of
         {error, Error} ->
-            lager:info("AA: libp2p libp2p_transport start_client_session negotiate_handler error ~p",[Error]),
+            %%lager:info("AA: libp2p libp2p_transport start_client_session negotiate_handler error ~p",[Error]),
             {error, Error};
         server_switch ->
             ChildSpec = #{ id => make_ref(),
@@ -204,7 +204,7 @@ start_client_session(TID, Addr, Connection) ->
             {ok, SessionPid} = supervisor:start_child(SessionSup, ChildSpec),
             case libp2p_connection:controlling_process(Connection, SessionPid) of
                 {ok, _} ->
-                    lager:info("AA: libp2p libp2p_transport start_client_session libp2p_connection:controlling_process ok"),
+                    %%lager:info("AA: libp2p libp2p_transport start_client_session libp2p_connection:controlling_process ok"),
                     libp2p_config:insert_session(TID, Addr, SessionPid, outbound),
                     AddrInfo = libp2p_connection:addr_info(Connection),
                     libp2p_config:insert_session_addr_info(TID, SessionPid, AddrInfo),

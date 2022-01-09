@@ -784,17 +784,17 @@ connect_to(Addr, UserOptions, Timeout, TID, TCPPid) ->
             ListenAddrs = libp2p_config:listen_addrs(TID),
             Options = connect_options(Type, AddrOpts ++ common_options(), Addr, ListenAddrs,
                                       UniqueSession, UniquePort),
-            lager:info("AA: libp2p libp2p_transport_tcp connect_to  IP ~p Port ~p Type  ~p Options  ~p ListenAddrs  ~p  ", [IP, Port, Type, Options,ListenAddrs]),
+            %%lager:info("AA: libp2p libp2p_transport_tcp connect_to  IP ~p Port ~p Type  ~p Options  ~p ListenAddrs  ~p  ", [IP, Port, Type, Options,ListenAddrs]),
             case ranch_tcp:connect(IP, Port, Options, Timeout) of
                 {ok, Socket} ->
-                    lager:info("AA: libp2p libp2p_transport_tcp connect_to ranch_tcp:connect ok"),
+                    %%lager:info("AA: libp2p libp2p_transport_tcp connect_to ranch_tcp:connect ok"),
                     case libp2p_transport:start_client_session(TID, Addr, new_connection(Socket)) of
                         {ok, SessionPid} ->
                             libp2p_session:identify(SessionPid, TCPPid, SessionPid),
-                            lager:info("AA: libp2p libp2p_transport_tcp connect_to start_client_session ok SessionPid ~p",[SessionPid]),
+                            %%lager:info("AA: libp2p libp2p_transport_tcp connect_to start_client_session ok SessionPid ~p",[SessionPid]),
                             {ok, SessionPid};
                         {error, Reason} ->
-                            lager:info("AA: libp2p libp2p_transport_tcp connect_to start_client_session error ~p",[Reason]),
+                            %%lager:info("AA: libp2p libp2p_transport_tcp connect_to start_client_session error ~p",[Reason]),
                             {error, Reason}
                     end;
                 {error, eaddrnotavail} when UniquePort == false ->
@@ -802,13 +802,13 @@ connect_to(Addr, UserOptions, Timeout, TID, TCPPid) ->
                     %% because there's already a socket with the same SrcIP, SrcPort, DestIP, DestPort
                     %% combination (it may be in a timeout/close state). This will at least allow us to
                     %% connect while that ages out.
-                    lager:info("AA: libp2p libp2p_transport_tcp connect_to ranch_tcp:connect eaddrnotavail"),
+                    %%lager:info("AA: libp2p libp2p_transport_tcp connect_to ranch_tcp:connect eaddrnotavail"),
                     connect_to(Addr, [{unique_port, true} | UserOptions], Timeout, TID, TCPPid);
                 {error, Error} ->
                     {error, Error}
             end;
         {error, Reason} ->
-          lager:error("AA: libp2p libp2p_transport_tcp connect_to tcp_addr Reason  ~p", [Reason]),
+          %%lager:error("AA: libp2p libp2p_transport_tcp connect_to tcp_addr Reason  ~p", [Reason]),
           {error, Reason}
     end.
 

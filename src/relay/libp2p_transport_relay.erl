@@ -114,7 +114,7 @@ connect_rcv(Swarm, MAddr, SAddress, SessionPid, Stream) ->
             true = libp2p_config:remove_relay_sessions(libp2p_swarm:tid(Swarm), SAddress),
             {ok, Session};
         {error, "server_down"}=Error ->
-            lager:error("AA: server_down"),
+            %%lager:error("AA: server_down"),
             true = libp2p_config:remove_relay_sessions(libp2p_swarm:tid(Swarm), SAddress),
             MarkedPeerAddr = libp2p_crypto:p2p_to_pubkey_bin(SAddress),
             PeerBook = libp2p_swarm:peerbook(Swarm),
