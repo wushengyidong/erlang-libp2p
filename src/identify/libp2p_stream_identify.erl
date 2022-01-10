@@ -33,6 +33,7 @@ server(Connection, Path, TID, []) ->
 
 init(client, Connection, [_TID, Handler]) ->
     lager:info("BB: init client -> libp2p_stream_idenify"),
+    lager:info("BB: client stack: ~s~n", [element(2, process_info(self(), backtrace))]),
     case libp2p_connection:session(Connection) of
         {ok, Session} ->
             Timer = erlang:send_after(?TIMEOUT, self(), identify_timeout),
@@ -43,6 +44,7 @@ init(client, Connection, [_TID, Handler]) ->
     end;
 init(server, Connection, [Path, TID]) ->
     lager:info("BB: init server -> libp2p_stream_idenify"),
+    lager:info("BB: server stack: ~s~n", [element(2, process_info(self(), backtrace))]),
     "/" ++ Str = Path,
     Challenge = base58:base58_to_binary(Str),
     lager:info("BB: init server -> Challenge ~p~n", [Challenge]),
@@ -62,6 +64,7 @@ init(server, Connection, [Path, TID]) ->
 handle_data(client, Data, State=#state{}) ->
     erlang:cancel_timer(State#state.timeout),
     lager:info("BB: libp2p_stream_idenify -> handle_data"),
+    lager:info("BB: handle client data stack: ~s~n", [element(2, process_info(self(), backtrace))]),
     State#state.handler ! {handle_identify, State#state.session, libp2p_identify:decode(Data)},
     {stop, normal, State}.
 
