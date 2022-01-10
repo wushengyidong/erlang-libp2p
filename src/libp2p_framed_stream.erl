@@ -111,16 +111,24 @@ init({client, Module, Connection, Args, Parent}) ->
 %%
 -spec client(atom(), libp2p_connection:connection(), [any()]) -> {ok, pid()} | {error, term()} | ignore.
 client(Module, Connection, Args) ->
+    lager:info("BB: Module, Connection: ~p ~p", [Module, Connection]),
     case gen_server:start_link(?MODULE, {client, Module, Connection, Args, self()}, []) of
         {ok, Pid} ->
+            lager:info("BB: gen_server:start_link ok "),
             libp2p_connection:controlling_process(Connection, Pid),
+            lager:info("BB: gen_server:start_link 222 "),
             receive
                 {?MODULE, rdy} -> {ok, Pid};
-                {?MODULE, {error, _}=Error} -> Error
+                {?MODULE, {error, _}=Error} ->
+                  lager:info("BB: when receive error"),
+                  Error
             after 10000 ->
+                lager:info("BB: after rdy_timeout"),
                 {error, rdy_timeout}
             end;
-        {error, Error} -> {error, Error};
+        {error, Error} ->
+          lager:info("BB: gen_server:start_link error: ~p", [Error]),
+          {error, Error};
         Other -> Other
     end.
 
