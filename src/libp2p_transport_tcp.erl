@@ -1149,7 +1149,7 @@ do_identify(Session, Identify, State=#state{tid=TID}) ->
     {LocalAddr, _PeerAddr} = libp2p_session:addr_info(State#state.tid, Session),
     RemoteP2PAddr = libp2p_crypto:pubkey_bin_to_p2p(libp2p_identify:pubkey_bin(Identify)),
     ListenAddrs = libp2p_config:listen_addrs(TID),
-    lager:info("BB: do_identify 222"),
+    lager:info("BB: do_identify 222，RemoteP2PAddr:  ~p", [RemoteP2PAddr]),
     case lists:member(LocalAddr, ListenAddrs) of
         true ->
             lager:info("BB: do_identify 333"),
