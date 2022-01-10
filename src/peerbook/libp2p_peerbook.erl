@@ -93,6 +93,7 @@ put(Handle, PeerList) ->
 
 -spec put(peerbook(), [libp2p_peer:peer()], boolean()) -> ok | {error, term()}.
 put(#peerbook{tid=TID, stale_time=StaleTime}=Handle, PeerList0, Prevalidated) ->
+    lager:info("AA: peerbook put 111"),
     PeerList =
         %% allow prevalidation so we can move the work around if needed
         case Prevalidated of
@@ -108,6 +109,7 @@ put(#peerbook{tid=TID, stale_time=StaleTime}=Handle, PeerList0, Prevalidated) ->
                                  %% no need to store a peer with no listen addresses
                                  %% and it it will make it easier to get an updated version
                                  %% later once the peer has an address
+                                 lager:info("AA: peerbook put 222"),
                                  Acc;
                              _ ->
                                  NewPeerId = libp2p_peer:pubkey_bin(NewPeer),
@@ -115,11 +117,13 @@ put(#peerbook{tid=TID, stale_time=StaleTime}=Handle, PeerList0, Prevalidated) ->
                                      {error, not_found} ->
                                          case AllowRFC1918 orelse not libp2p_peer:has_private_ip(NewPeer) of
                                              true ->
+                                                 lager:info("AA: peerbook put 333"),
                                                  store_peer(NewPeer, Handle),
                                                  [NewPeer | Acc];
                                              false -> Acc
                                          end;
                                      {ok, ExistingPeer} ->
+                                         lager:info("AA: peerbook put 444"),
                                          %% Only store peers that are not _this_ peer,
                                          %% are newer than what we have,
                                          %% are not stale themselves
@@ -131,6 +135,7 @@ put(#peerbook{tid=TID, stale_time=StaleTime}=Handle, PeerList0, Prevalidated) ->
                                              true ->
                                                  %% even if the peer is similar, we should still
                                                  %% store it because it's newer
+                                                 lager:info("AA: peerbook put 555"),
                                                  store_peer(NewPeer, Handle),
                                                  case libp2p_peer:is_similar(NewPeer, ExistingPeer) of
                                                      false ->
