@@ -75,15 +75,10 @@ handle_info({handle_identify, Session, {ok, Identify}}, State=#state{tid=TID}) -
     PeerBook = libp2p_swarm:peerbook(TID),
     try libp2p_peerbook:put(PeerBook, [libp2p_identify:peer(Identify)]) of
         ok ->
-            OUR_IP = "/p2p/112BsKd6XFTDCERpAceQpuuLpudC2WL2CpEbZBMtswcBujb4vxBj",
-            case Addr  of
-                OUR_IP ->
-                  lager:warning("BB: Close session for addr ~p", [Addr]),
-                  libp2p_session:close(Session);
-                _ ->
-                    libp2p_config:insert_session(TID, Addr, Session),
-                    libp2p_peerbook:register_session(PeerBook, Session, Identify)
-            end;
+            libp2p_config:insert_session(TID,
+                                         Addr,
+                                         Session),
+            libp2p_peerbook:register_session(PeerBook, Session, Identify);
         {error, Reason} ->
             lager:warning("Failed to put peerbook entry for ~p ~p", [Addr, Reason]),
             libp2p_session:close(Session)
