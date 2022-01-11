@@ -70,6 +70,7 @@ handle_msg(Msg, State) ->
 handle_info({inert_read, _, _}, State=#state{connection=Conn,
                                              handlers=Handlers,
                                              handler_opt=HandlerOpt}) ->
+    lager:info("BB: mul steam server stack: ~s~n", [element(2, process_info(self(), backtrace))]),
     case libp2p_multistream:read(Conn) of
         {error, timeout} ->
             lager:debug("Timeout reading from multistream"),

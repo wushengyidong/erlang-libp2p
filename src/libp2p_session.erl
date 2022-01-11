@@ -76,7 +76,7 @@ dial(Path, SessionPid) ->
     %%lager:info("AA: libp2p session dial"),
     try libp2p_session:open(SessionPid) of
         {error, Error} ->
-            %%lager:error("AA: Failed to open session in dia: ~p", [Error]),
+            lager:error("AA: Failed to open session in dia: ~p", [Error]),
             {error, Error};
         {ok, Connection} ->
             Handlers = [{Path, undefined}],
